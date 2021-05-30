@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.tpp": "cpp"
+    },
+    "terminal.integrated.shell.windows": "cmd.exe",
+    "cSpell.words": [
+        "GLFW",
+        "Wwindow"
+    ]
+}
