@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace holy_engine {
+namespace Holy_Engine {
 class MainWindow {
 private:
   void initWindow();
@@ -27,6 +27,6 @@ public:
 
   bool shouldClose() { return glfwWindowShouldClose(window); }
 };
-} // namespace holy_engine
+} // namespace Holy_Engine
 
 #endif

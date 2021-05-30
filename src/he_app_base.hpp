@@ -5,8 +5,8 @@
 
 #pragma once
 
-namespace holy_engine {
-class FirstApp {
+namespace Holy_Engine {
+class HEAppBase {
 private:
   MainWindow mainWindow{WIDTH, HEIGHT, "Holy Engine"};
 
@@ -16,5 +16,5 @@ public:
 
   void run();
 };
-} // namespace holy_engine
+} // namespace Holy_Engine
 #endif

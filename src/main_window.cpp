@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include <GLFW/glfw3.h>
 
-namespace holy_engine {
+namespace Holy_Engine {
 MainWindow::MainWindow(int w, int h, std::string name)
     : width{w}, height{h}, windowName{name} {
   initWindow();
@@ -20,4 +20,4 @@ void MainWindow::initWindow() {
   window =
       glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 }
-} // namespace holy_engine
+} // namespace Holy_Engine
