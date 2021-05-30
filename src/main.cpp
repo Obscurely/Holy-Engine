@@ -1,4 +1,4 @@
-#include "first_app.hpp"
+#include "he_app_base.hpp"
 
 // std
 #include <cstdlib>
@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 int main() {
-  holy_engine::FirstApp app{};
+  Holy_Engine::HEAppBase app{};
 
   try {
     app.run();
