@@ -1,5 +1,6 @@
 #include "main_window.hpp"
 #include <GLFW/glfw3.h>
+#include <stdexcept>
 
 namespace Holy_Engine {
 MainWindow::MainWindow(int w, int h, std::string name)
@@ -19,5 +20,13 @@ void MainWindow::initWindow() {
 
   window =
       glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+}
+
+void MainWindow::createWindowSurface(VkInstance instance,
+                                     VkSurfaceKHR *surface) {
+  if (glfwCreateWindowSurface(instance, window, nullptr, surface) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("failed to create window surface");
+  }
 }
 } // namespace Holy_Engine

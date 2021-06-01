@@ -1,9 +1,10 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <string>
 
 #pragma once
 
@@ -26,6 +27,8 @@ public:
   MainWindow &operator=(const MainWindow &) = delete;
 
   bool shouldClose() { return glfwWindowShouldClose(window); }
+
+  void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 };
 } // namespace Holy_Engine
 

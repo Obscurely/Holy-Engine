@@ -5,6 +5,8 @@
     "terminal.integrated.shell.windows": "cmd.exe",
     "cSpell.words": [
         "GLFW",
+        "Gflw",
+        "VKAPI",
         "Wwindow"
     ]
 }
