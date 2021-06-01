@@ -22,10 +22,12 @@ private:
   void createPipeline();
   void createCommandBuffers();
   void drawFrame();
+  void recreateSwapChain();
+  void recordCommandBuffer(int imageIndex);
 
   HEWindow heWindow{WIDTH, HEIGHT, "Holy Engine"};
   HEDevice heDevice{heWindow};
-  HESwapChain heSwapChain{heDevice, heWindow.getExtent()};
+  std::unique_ptr<HESwapChain> heSwapChain;
   VkPipelineLayout pipelineLayout;
   std::unique_ptr<HEPipeline> hePipeline;
   std::vector<VkCommandBuffer> commandBuffers;

@@ -5,6 +5,7 @@
 
 // std
 #include <array>
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 
@@ -12,7 +13,7 @@ namespace Holy_Engine {
 HEAppBase::HEAppBase() {
   loadModels();
   createPipelineLayout();
-  createPipeline();
+  recreateSwapChain();
   createCommandBuffers();
 }
 
@@ -50,16 +51,29 @@ void HEAppBase::createPipelineLayout() {
 
 void HEAppBase::createPipeline() {
   auto pipelineConfig = HEPipeline::defaultPipelineConfigInfo(
-      heSwapChain.width(), heSwapChain.height());
-  pipelineConfig.renderPass = heSwapChain.getRenderPass();
+      heSwapChain->width(), heSwapChain->height());
+  pipelineConfig.renderPass = heSwapChain->getRenderPass();
   pipelineConfig.pipelineLayout = pipelineLayout;
   hePipeline = std::make_unique<HEPipeline>(
       heDevice, "../src/shaders/simple_shader.vert.spv",
       "../src/shaders/simple_shader.frag.spv", pipelineConfig);
 }
 
+void HEAppBase::recreateSwapChain() {
+  auto extent = heWindow.getExtent();
+  while (extent.width == 0 || extent.height == 0) {
+    extent = heWindow.getExtent();
+    glfwWaitEvents();
+  }
+
+  vkDeviceWaitIdle(heDevice.device());
+  heSwapChain = nullptr;
+  heSwapChain = std::make_unique<HESwapChain>(heDevice, extent);
+  createPipeline();
+}
+
 void HEAppBase::createCommandBuffers() {
-  commandBuffers.resize(heSwapChain.imageCount());
+  commandBuffers.resize(heSwapChain->imageCount());
 
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -71,54 +85,67 @@ void HEAppBase::createCommandBuffers() {
                                commandBuffers.data()) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate command buffers!");
   }
+}
 
-  for (int i = 0; i < commandBuffers.size(); i++) {
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+void HEAppBase::recordCommandBuffer(int imageIndex) {
+  VkCommandBufferBeginInfo beginInfo{};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-      throw std::runtime_error("failed to begin recording command buffer!");
-    }
+  if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("failed to begin recording command buffer!");
+  }
 
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = heSwapChain.getRenderPass();
+  VkRenderPassBeginInfo renderPassInfo{};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = heSwapChain->getRenderPass();
 
-    renderPassInfo.framebuffer = heSwapChain.getFrameBuffer(i);
+  renderPassInfo.framebuffer = heSwapChain->getFrameBuffer(imageIndex);
 
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = heSwapChain.getSwapChainExtent();
+  renderPassInfo.renderArea.offset = {0, 0};
+  renderPassInfo.renderArea.extent = heSwapChain->getSwapChainExtent();
 
-    std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
-    clearValues[1].depthStencil = {1.0f, 0};
-    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    renderPassInfo.pClearValues = clearValues.data();
+  std::array<VkClearValue, 2> clearValues{};
+  clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+  clearValues[1].depthStencil = {1.0f, 0};
+  renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+  renderPassInfo.pClearValues = clearValues.data();
 
-    vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo,
-                         VK_SUBPASS_CONTENTS_INLINE);
+  vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo,
+                       VK_SUBPASS_CONTENTS_INLINE);
 
-    hePipeline->bind(commandBuffers[i]);
-    heModel->bind(commandBuffers[i]);
-    heModel->draw(commandBuffers[i]);
+  hePipeline->bind(commandBuffers[imageIndex]);
+  heModel->bind(commandBuffers[imageIndex]);
+  heModel->draw(commandBuffers[imageIndex]);
 
-    vkCmdEndRenderPass(commandBuffers[i]);
-    if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-      throw std::runtime_error("failed to record command buffer!");
-    }
+  vkCmdEndRenderPass(commandBuffers[imageIndex]);
+  if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
+    throw std::runtime_error("failed to record command buffer!");
   }
 }
 
 void HEAppBase::drawFrame() {
   uint32_t imageIndex;
-  auto result = heSwapChain.acquireNextImage(&imageIndex);
+  auto result = heSwapChain->acquireNextImage(&imageIndex);
+
+  if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+    recreateSwapChain();
+    return;
+  }
 
   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
     throw std::runtime_error("failed to acquire swap chain image!");
   }
 
-  result = heSwapChain.submitCommandBuffers(&commandBuffers[imageIndex],
-                                            &imageIndex);
+  recordCommandBuffer(imageIndex);
+  result = heSwapChain->submitCommandBuffers(&commandBuffers[imageIndex],
+                                             &imageIndex);
+  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      heWindow.wasWindowResized()) {
+    heWindow.resetWindowResizedFlag();
+    recreateSwapChain();
+    return;
+  }
 
   if (result != VK_SUCCESS) {
     throw std::runtime_error("failed to present swap chain image!");

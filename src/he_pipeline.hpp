@@ -45,7 +45,7 @@ public:
   ~HEPipeline();
 
   HEPipeline(const HEPipeline &) = delete;
-  void operator=(const HEPipeline &) = delete;
+  HEPipeline &operator=(const HEPipeline &) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
 

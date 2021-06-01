@@ -36,7 +36,7 @@ public:
 
   // Not copyable or movable
   HEDevice(const HEDevice &) = delete;
-  void operator=(const HEDevice &) = delete;
+  HEDevice &operator=(const HEDevice &) = delete;
   HEDevice(HEDevice &&) = delete;
   HEDevice &operator=(HEDevice &&) = delete;
 
