@@ -28,8 +28,9 @@ void HEAppBase::run() {
 }
 
 void HEAppBase::loadModels() {
-  std::vector<HEModel::Vertex> vertices{
-      {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+  std::vector<HEModel::Vertex> vertices{{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+                                        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
   heModel = std::make_unique<HEModel>(heDevice, vertices);
 }
