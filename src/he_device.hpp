@@ -1,6 +1,6 @@
 #pragma once
 
-#include "main_window.hpp"
+#include "he_window.hpp"
 
 // std lib headers
 #include <string>
@@ -31,7 +31,7 @@ public:
   const bool enableValidationLayers = true;
 #endif
 
-  HEDevice(MainWindow &window);
+  HEDevice(HEWindow &window);
   ~HEDevice();
 
   // Not copyable or movable
@@ -96,7 +96,7 @@ private:
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  MainWindow &window;
+  HEWindow &window;
   VkCommandPool commandPool;
 
   VkDevice device_;

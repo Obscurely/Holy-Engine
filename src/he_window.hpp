@@ -1,5 +1,5 @@
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef HE_WINDOW_H
+#define HE_WINDOW_H
 #include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 
@@ -9,7 +9,7 @@
 #pragma once
 
 namespace Holy_Engine {
-class MainWindow {
+class HEWindow {
 private:
   void initWindow();
 
@@ -20,11 +20,11 @@ private:
   GLFWwindow *window;
 
 public:
-  MainWindow(int w, int h, std::string name);
-  ~MainWindow();
+  HEWindow(int w, int h, std::string name);
+  ~HEWindow();
 
-  MainWindow(const MainWindow &) = delete;
-  MainWindow &operator=(const MainWindow &) = delete;
+  HEWindow(const HEWindow &) = delete;
+  HEWindow &operator=(const HEWindow &) = delete;
 
   bool shouldClose() { return glfwWindowShouldClose(window); }
   VkExtent2D getExtent() {

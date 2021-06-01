@@ -3,7 +3,7 @@
 
 namespace Holy_Engine {
 void HEAppBase::run() {
-  while (!mainWindow.shouldClose()) {
+  while (!heWindow.shouldClose()) {
     glfwPollEvents();
   }
 }

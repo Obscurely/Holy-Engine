@@ -1,19 +1,19 @@
-#include "main_window.hpp"
+#include "he_window.hpp"
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
 namespace Holy_Engine {
-MainWindow::MainWindow(int w, int h, std::string name)
+HEWindow::HEWindow(int w, int h, std::string name)
     : width{w}, height{h}, windowName{name} {
   initWindow();
 }
 
-MainWindow::~MainWindow() {
+HEWindow::~HEWindow() {
   glfwDestroyWindow(window);
   glfwTerminate();
 }
 
-void MainWindow::initWindow() {
+void HEWindow::initWindow() {
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -22,8 +22,7 @@ void MainWindow::initWindow() {
       glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 }
 
-void MainWindow::createWindowSurface(VkInstance instance,
-                                     VkSurfaceKHR *surface) {
+void HEWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
   if (glfwCreateWindowSurface(instance, window, nullptr, surface) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to create window surface");

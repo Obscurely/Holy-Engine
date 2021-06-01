@@ -1,20 +1,23 @@
-#ifndef FIRST_APP_H
-#define FIRST_APP_H
+#ifndef HE_APP_BASE_H
+#define HE_APP_BASE_H
 
 #include "he_device.hpp"
 #include "he_pipeline.hpp"
 #include "he_swap_chain.hpp"
-#include "main_window.hpp"
+#include "he_window.hpp"
 #include <vulkan/vulkan_core.h>
+
+// std
+#include <memory>
 
 #pragma once
 
 namespace Holy_Engine {
 class HEAppBase {
 private:
-  MainWindow mainWindow{WIDTH, HEIGHT, "Holy Engine"};
-  HEDevice heDevice{mainWindow};
-  HESwapChain heSwapChain{heDevice, mainWindow.getExtent()};
+  HEWindow heWindow{WIDTH, HEIGHT, "Holy Engine"};
+  HEDevice heDevice{heWindow};
+  HESwapChain heSwapChain{heDevice, heWindow.getExtent()};
   VkPipelineLayout pipelineLayout;
   HEPipeline hePipeline{heDevice, "../src/shaders/simple_shader.vert.spv",
                         "../src/shaders/simple_shader.frag.spv",

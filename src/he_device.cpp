@@ -1,5 +1,5 @@
 #include "he_device.hpp"
-#include "main_window.hpp"
+#include "he_window.hpp"
 
 // std headers
 #include <cstring>
@@ -44,7 +44,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 // class member functions
-HEDevice::HEDevice(MainWindow &window) : window{window} {
+HEDevice::HEDevice(HEWindow &window) : window{window} {
   createInstance();
   setupDebugMessenger();
   createSurface();
