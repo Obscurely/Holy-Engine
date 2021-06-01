@@ -7,6 +7,7 @@
         "GLFW",
         "Gflw",
         "VKAPI",
-        "Wwindow"
+        "Wwindow",
+        "chdir"
     ]
 }
