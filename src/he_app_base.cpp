@@ -10,6 +10,7 @@
 
 namespace Holy_Engine {
 HEAppBase::HEAppBase() {
+  loadModels();
   createPipelineLayout();
   createPipeline();
   createCommandBuffers();
@@ -24,6 +25,13 @@ void HEAppBase::run() {
     glfwPollEvents();
     drawFrame();
   }
+}
+
+void HEAppBase::loadModels() {
+  std::vector<HEModel::Vertex> vertices{
+      {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+
+  heModel = std::make_unique<HEModel>(heDevice, vertices);
 }
 
 void HEAppBase::createPipelineLayout() {
@@ -90,7 +98,8 @@ void HEAppBase::createCommandBuffers() {
                          VK_SUBPASS_CONTENTS_INLINE);
 
     hePipeline->bind(commandBuffers[i]);
-    vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+    heModel->bind(commandBuffers[i]);
+    heModel->draw(commandBuffers[i]);
 
     vkCmdEndRenderPass(commandBuffers[i]);
     if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

@@ -2,6 +2,7 @@
 #define HE_APP_BASE_H
 
 #include "he_device.hpp"
+#include "he_model.hpp"
 #include "he_pipeline.hpp"
 #include "he_swap_chain.hpp"
 #include "he_window.hpp"
@@ -16,6 +17,7 @@
 namespace Holy_Engine {
 class HEAppBase {
 private:
+  void loadModels();
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
@@ -27,6 +29,7 @@ private:
   VkPipelineLayout pipelineLayout;
   std::unique_ptr<HEPipeline> hePipeline;
   std::vector<VkCommandBuffer> commandBuffers;
+  std::unique_ptr<HEModel> heModel;
 
 public:
   static constexpr int WIDTH = 800;

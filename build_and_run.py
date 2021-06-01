@@ -1,5 +1,5 @@
 """
-Cross-platform build script for Holy-Engine. Requires CMake to be in PATH.
+Cross-platform build script for Holy-Engine. Requires CMake and Vulkan Tools to be in PATH.
 """
 import os
 import platform
@@ -34,4 +34,24 @@ def build():
     os.chdir(app_dir)
 
 
+def compile_shader(shader_name):
+    print(os.system(f"glslc {shader_name} -o {shader_name}.spv"))
+
+
+def compile_shaders():
+    os.chdir(
+        f"{app_dir}{get_platform_file_separator()}src{get_platform_file_separator()}shaders")
+
+    dir_files = os.listdir()
+    for file in dir_files:
+        try:
+            file.split("spv")[1]
+            continue
+        except:
+            compile_shader(file)
+
+    os.chdir(app_dir)
+
+
+compile_shaders()
 build()
