@@ -1,3 +1,6 @@
+"""
+Cross-platform build script for Holy-Engine. Requires CMake to be in PATH.
+"""
 import os
 import platform
 import shutil
