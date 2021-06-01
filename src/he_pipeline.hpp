@@ -47,6 +47,8 @@ public:
   HEPipeline(const HEPipeline &) = delete;
   void operator=(const HEPipeline &) = delete;
 
+  void bind(VkCommandBuffer commandBuffer);
+
   static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width,
                                                       uint32_t height);
 };

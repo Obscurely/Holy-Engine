@@ -9,23 +9,34 @@
 
 // std
 #include <memory>
+#include <vector>
 
 #pragma once
 
 namespace Holy_Engine {
 class HEAppBase {
 private:
+  void createPipelineLayout();
+  void createPipeline();
+  void createCommandBuffers();
+  void drawFrame();
+
   HEWindow heWindow{WIDTH, HEIGHT, "Holy Engine"};
   HEDevice heDevice{heWindow};
   HESwapChain heSwapChain{heDevice, heWindow.getExtent()};
   VkPipelineLayout pipelineLayout;
-  HEPipeline hePipeline{heDevice, "../src/shaders/simple_shader.vert.spv",
-                        "../src/shaders/simple_shader.frag.spv",
-                        HEPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
+  std::unique_ptr<HEPipeline> hePipeline;
+  std::vector<VkCommandBuffer> commandBuffers;
 
 public:
   static constexpr int WIDTH = 800;
   static constexpr int HEIGHT = 600;
+
+  HEAppBase();
+  ~HEAppBase();
+
+  HEAppBase(const HEAppBase &) = delete;
+  HEAppBase &operator=(const HEAppBase &) = delete;
 
   void run();
 };
