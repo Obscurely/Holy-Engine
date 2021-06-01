@@ -17,7 +17,10 @@ def get_platform_file_separator():
 
 
 def build():
-    shutil.rmtree("build")
+    try:
+        shutil.rmtree("build")
+    except:
+        pass
     os.mkdir("build")
     os.chdir(os.getcwd() + get_platform_file_separator() + "build")
 
