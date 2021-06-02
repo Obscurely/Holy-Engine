@@ -1,6 +1,11 @@
 #include "he_app_base.hpp"
 #include "he_pipeline.hpp"
+
+// libs
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <vulkan/vulkan_core.h>
 
 // std
@@ -10,6 +15,11 @@
 #include <stdexcept>
 
 namespace Holy_Engine {
+struct SimplePushConstantData {
+  glm::vec2 offset;
+  alignas(16) glm::vec3 color;
+};
+
 HEAppBase::HEAppBase() {
   loadModels();
   createPipelineLayout();
@@ -37,12 +47,18 @@ void HEAppBase::loadModels() {
 }
 
 void HEAppBase::createPipelineLayout() {
+  VkPushConstantRange pushConstantRange{};
+  pushConstantRange.stageFlags =
+      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+  pushConstantRange.offset = 0;
+  pushConstantRange.size = sizeof(SimplePushConstantData);
+
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = 0;
   pipelineLayoutInfo.pSetLayouts = nullptr;
-  pipelineLayoutInfo.pushConstantRangeCount = 0;
-  pipelineLayoutInfo.pPushConstantRanges = nullptr;
+  pipelineLayoutInfo.pushConstantRangeCount = 1;
+  pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
   if (vkCreatePipelineLayout(heDevice.device(), &pipelineLayoutInfo, nullptr,
                              &pipelineLayout) != VK_SUCCESS) {
     throw std::runtime_error("failed to create pipeline layout!");
@@ -108,6 +124,9 @@ void HEAppBase::freeCommandBuffers() {
 }
 
 void HEAppBase::recordCommandBuffer(int imageIndex) {
+  static int frame = 0;
+  frame = (frame + 1) % 1000;
+
   VkCommandBufferBeginInfo beginInfo{};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -125,7 +144,7 @@ void HEAppBase::recordCommandBuffer(int imageIndex) {
   renderPassInfo.renderArea.extent = heSwapChain->getSwapChainExtent();
 
   std::array<VkClearValue, 2> clearValues{};
-  clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+  clearValues[0].color = {0.01f, 0.1f, 0.1f, 1.0f};
   clearValues[1].depthStencil = {1.0f, 0};
   renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
   renderPassInfo.pClearValues = clearValues.data();
@@ -147,7 +166,18 @@ void HEAppBase::recordCommandBuffer(int imageIndex) {
 
   hePipeline->bind(commandBuffers[imageIndex]);
   heModel->bind(commandBuffers[imageIndex]);
-  heModel->draw(commandBuffers[imageIndex]);
+
+  for (int i = 0; i < 4; i++) {
+    SimplePushConstantData push{};
+    push.offset = {-0.5f + frame * 0.002f, -0.4f + i * 0.25f};
+    push.color = {0.0f, 0.0f, 0.2f + 0.2f * i};
+
+    vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout,
+                       VK_SHADER_STAGE_VERTEX_BIT |
+                           VK_SHADER_STAGE_FRAGMENT_BIT,
+                       0, sizeof(SimplePushConstantData), &push);
+    heModel->draw(commandBuffers[imageIndex]);
+  }
 
   vkCmdEndRenderPass(commandBuffers[imageIndex]);
   if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {

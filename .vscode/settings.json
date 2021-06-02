@@ -9,6 +9,7 @@
         "SFLOAT",
         "VKAPI",
         "Wwindow",
+        "alignas",
         "chdir",
         "glslc"
     ]
