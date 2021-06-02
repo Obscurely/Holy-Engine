@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <set>
 #include <stdexcept>
 
@@ -13,12 +14,14 @@ namespace Holy_Engine {
 
 HESwapChain::HESwapChain(HEDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
-  createSwapChain();
-  createImageViews();
-  createRenderPass();
-  createDepthResources();
-  createFramebuffers();
-  createSyncObjects();
+  init();
+}
+
+HESwapChain::HESwapChain(HEDevice &deviceRef, VkExtent2D extent,
+                         std::shared_ptr<HESwapChain> previous)
+    : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+  init();
+  oldSwapChain = nullptr;
 }
 
 HESwapChain::~HESwapChain() {
@@ -50,6 +53,15 @@ HESwapChain::~HESwapChain() {
     vkDestroySemaphore(device.device(), imageAvailableSemaphores[i], nullptr);
     vkDestroyFence(device.device(), inFlightFences[i], nullptr);
   }
+}
+
+void HESwapChain::init() {
+  createSwapChain();
+  createImageViews();
+  createRenderPass();
+  createDepthResources();
+  createFramebuffers();
+  createSyncObjects();
 }
 
 VkResult HESwapChain::acquireNextImage(uint32_t *imageIndex) {
@@ -161,7 +173,8 @@ void HESwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain =
+      oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) !=
       VK_SUCCESS) {

@@ -50,8 +50,12 @@ void HEAppBase::createPipelineLayout() {
 }
 
 void HEAppBase::createPipeline() {
-  auto pipelineConfig = HEPipeline::defaultPipelineConfigInfo(
-      heSwapChain->width(), heSwapChain->height());
+  assert(heSwapChain != nullptr && "Cannot create pipeline before swap chain");
+  assert(pipelineLayout != nullptr &&
+         "Cannot create pipeline before pipeline layout");
+
+  PipelineConfigInfo pipelineConfig{};
+  HEPipeline::defaultPipelineConfigInfo(pipelineConfig);
   pipelineConfig.renderPass = heSwapChain->getRenderPass();
   pipelineConfig.pipelineLayout = pipelineLayout;
   hePipeline = std::make_unique<HEPipeline>(
@@ -65,10 +69,19 @@ void HEAppBase::recreateSwapChain() {
     extent = heWindow.getExtent();
     glfwWaitEvents();
   }
-
   vkDeviceWaitIdle(heDevice.device());
-  heSwapChain = nullptr;
-  heSwapChain = std::make_unique<HESwapChain>(heDevice, extent);
+
+  if (heSwapChain == nullptr) {
+    heSwapChain = std::make_unique<HESwapChain>(heDevice, extent);
+  } else {
+    heSwapChain =
+        std::make_unique<HESwapChain>(heDevice, extent, std::move(heSwapChain));
+    if (heSwapChain->imageCount() != commandBuffers.size()) {
+      freeCommandBuffers();
+      createCommandBuffers();
+    }
+  }
+
   createPipeline();
 }
 
@@ -87,6 +100,13 @@ void HEAppBase::createCommandBuffers() {
   }
 }
 
+void HEAppBase::freeCommandBuffers() {
+  vkFreeCommandBuffers(heDevice.device(), heDevice.getCommandPool(),
+                       static_cast<uint32_t>(commandBuffers.size()),
+                       commandBuffers.data());
+  commandBuffers.clear();
+}
+
 void HEAppBase::recordCommandBuffer(int imageIndex) {
   VkCommandBufferBeginInfo beginInfo{};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -99,7 +119,6 @@ void HEAppBase::recordCommandBuffer(int imageIndex) {
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = heSwapChain->getRenderPass();
-
   renderPassInfo.framebuffer = heSwapChain->getFrameBuffer(imageIndex);
 
   renderPassInfo.renderArea.offset = {0, 0};
@@ -113,6 +132,18 @@ void HEAppBase::recordCommandBuffer(int imageIndex) {
 
   vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
+
+  VkViewport viewport{};
+  viewport.x = 0.0f;
+  viewport.y = 0.0f;
+  viewport.width = static_cast<float>(heSwapChain->getSwapChainExtent().width);
+  viewport.height =
+      static_cast<float>(heSwapChain->getSwapChainExtent().height);
+  viewport.minDepth = 0.0f;
+  viewport.maxDepth = 1.0f;
+  VkRect2D scissor{{0, 0}, heSwapChain->getSwapChainExtent()};
+  vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+  vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
   hePipeline->bind(commandBuffers[imageIndex]);
   heModel->bind(commandBuffers[imageIndex]);
@@ -145,9 +176,7 @@ void HEAppBase::drawFrame() {
     heWindow.resetWindowResizedFlag();
     recreateSwapChain();
     return;
-  }
-
-  if (result != VK_SUCCESS) {
+  } else if (result != VK_SUCCESS) {
     throw std::runtime_error("failed to present swap chain image!");
   }
 }
