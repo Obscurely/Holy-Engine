@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HE_SWAP_CHAIN_H
+#define HE_SWAP_CHAIN_H
 
 #include "he_device.hpp"
 
@@ -9,6 +10,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#pragma once
 
 namespace Holy_Engine {
 
@@ -87,3 +90,4 @@ private:
 };
 
 } // namespace Holy_Engine
+#endif

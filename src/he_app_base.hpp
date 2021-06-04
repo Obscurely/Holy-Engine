@@ -2,7 +2,7 @@
 #define HE_APP_BASE_H
 
 #include "he_device.hpp"
-#include "he_model.hpp"
+#include "he_game_object.hpp"
 #include "he_pipeline.hpp"
 #include "he_swap_chain.hpp"
 #include "he_window.hpp"
@@ -17,7 +17,7 @@
 namespace Holy_Engine {
 class HEAppBase {
 private:
-  void loadModels();
+  void loadGameObjects();
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
@@ -25,6 +25,7 @@ private:
   void drawFrame();
   void recreateSwapChain();
   void recordCommandBuffer(int imageIndex);
+  void renderGameObjects(VkCommandBuffer commandBuffer);
 
   HEWindow heWindow{WIDTH, HEIGHT, "Holy Engine"};
   HEDevice heDevice{heWindow};
@@ -32,7 +33,7 @@ private:
   VkPipelineLayout pipelineLayout;
   std::unique_ptr<HEPipeline> hePipeline;
   std::vector<VkCommandBuffer> commandBuffers;
-  std::unique_ptr<HEModel> heModel;
+  std::vector<HEGameObject> gameObjects;
 
 public:
   static constexpr int WIDTH = 800;

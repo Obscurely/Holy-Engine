@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HE_DEVICE_H
+#define HE_DEVICE_H
 
 #include "he_window.hpp"
 
@@ -6,6 +7,8 @@
 #include <string>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+
+#pragma once
 
 namespace Holy_Engine {
 
@@ -111,3 +114,4 @@ private:
 };
 
 } // namespace Holy_Engine
+#endif
