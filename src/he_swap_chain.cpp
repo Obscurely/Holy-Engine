@@ -1,3 +1,4 @@
+// files
 #include "he_swap_chain.hpp"
 
 // std
@@ -11,7 +12,6 @@
 #include <stdexcept>
 
 namespace Holy_Engine {
-
 HESwapChain::HESwapChain(HEDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
   init();
@@ -431,5 +431,4 @@ VkFormat HESwapChain::findDepthFormat() {
        VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
-
 } // namespace Holy_Engine

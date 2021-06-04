@@ -1,5 +1,8 @@
 #ifndef HE_MODEL_H
 #define HE_MODEL_H
+#pragma once
+
+// files
 #include "he_device.hpp"
 
 // libs
@@ -10,8 +13,6 @@
 
 // std
 #include <vector>
-
-#pragma once
 
 namespace Holy_Engine {
 class HEModel {

@@ -1,5 +1,10 @@
+// files
 #include "he_window.hpp"
+
+// libs
 #include <GLFW/glfw3.h>
+
+// std
 #include <stdexcept>
 
 namespace Holy_Engine {

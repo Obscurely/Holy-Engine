@@ -1,18 +1,20 @@
 #ifndef HE_APP_BASE_H
 #define HE_APP_BASE_H
+#pragma once
 
+// files
 #include "he_device.hpp"
 #include "he_game_object.hpp"
 #include "he_pipeline.hpp"
 #include "he_swap_chain.hpp"
 #include "he_window.hpp"
+
+// libs
 #include <vulkan/vulkan_core.h>
 
 // std
 #include <memory>
 #include <vector>
-
-#pragma once
 
 namespace Holy_Engine {
 class HEAppBase {

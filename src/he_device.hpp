@@ -1,17 +1,18 @@
 #ifndef HE_DEVICE_H
 #define HE_DEVICE_H
-
-#include "he_window.hpp"
-
-// std lib headers
-#include <string>
-#include <vector>
-#include <vulkan/vulkan_core.h>
-
 #pragma once
 
-namespace Holy_Engine {
+// files
+#include "he_window.hpp"
 
+// libs
+#include <vulkan/vulkan_core.h>
+
+// std
+#include <string>
+#include <vector>
+
+namespace Holy_Engine {
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;
   std::vector<VkSurfaceFormatKHR> formats;
@@ -112,6 +113,5 @@ private:
   const std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
-
 } // namespace Holy_Engine
 #endif

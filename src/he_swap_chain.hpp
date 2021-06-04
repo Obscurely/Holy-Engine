@@ -1,20 +1,19 @@
 #ifndef HE_SWAP_CHAIN_H
 #define HE_SWAP_CHAIN_H
+#pragma once
 
+// files
 #include "he_device.hpp"
 
-// vulkan headers
+// libs
 #include <vulkan/vulkan.h>
 
-// std lib headers
+// std
 #include <memory>
 #include <string>
 #include <vector>
 
-#pragma once
-
 namespace Holy_Engine {
-
 class HESwapChain {
 public:
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
@@ -88,6 +87,5 @@ private:
   std::vector<VkFence> imagesInFlight;
   size_t currentFrame = 0;
 };
-
 } // namespace Holy_Engine
 #endif

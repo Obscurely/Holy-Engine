@@ -1,12 +1,14 @@
 #ifndef HE_WINDOW_H
 #define HE_WINDOW_H
-#include <vulkan/vulkan_core.h>
-#define GLFW_INCLUDE_VULKAN
-
-#include <GLFW/glfw3.h>
-#include <string>
-
 #pragma once
+
+// libs
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
+
+// std
+#include <string>
 
 namespace Holy_Engine {
 class HEWindow {
