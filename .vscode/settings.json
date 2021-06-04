@@ -7,7 +7,7 @@
         "GLFW",
         "Gflw",
         "HEGAMEOBJECT",
-        "HERENDERER",
+        "HEAppBase",
         "SFLOAT",
         "VKAPI",
         "Wwindow",
